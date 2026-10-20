@@ -12,7 +12,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 Copy-Item .env.example .env
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --env-file .env
 ```
 
 Open `http://127.0.0.1:8000/docs` for the API documentation. The API creates

@@ -45,6 +45,15 @@ def main() -> int:
             branch = data.get("branch", "")
             if branch:
                 git("show-ref", "--verify", "--quiet", f"refs/heads/{branch}")
+                if subprocess.run(
+                    ["git", "-C", str(ROOT), "merge-base", "--is-ancestor", "baseline", branch],
+                    capture_output=True,
+                ).returncode != 0:
+                    failures.append(f"{scenario}: branch is not based on baseline")
+                patch = (fixture / "changes.patch").read_text(encoding="utf-8")
+                current_diff = git("diff", "--binary", "baseline", branch, capture=True)
+                if patch.strip() != current_diff.strip():
+                    failures.append(f"{scenario}: changes.patch does not match its branch diff")
         except (json.JSONDecodeError, subprocess.CalledProcessError) as exc:
             failures.append(f"{scenario}: invalid JSON or missing Git branch ({exc})")
     if failures:
