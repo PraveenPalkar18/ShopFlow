@@ -21,6 +21,9 @@ $branch = "pr-{0:D2}-{1}" -f $number, $names[$number - 1]
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
     $OutputPath = Join-Path $repo ("evaluation\exports\" + $Scenario + ".patch")
 }
+elseif (-not [System.IO.Path]::IsPathRooted($OutputPath)) {
+    $OutputPath = Join-Path $repo $OutputPath
+}
 $resolvedOutput = [System.IO.Path]::GetFullPath($OutputPath)
 if (-not $resolvedOutput.StartsWith($repo + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "Output must be inside the ShopFlow repository."
