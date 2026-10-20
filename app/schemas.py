@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 class RegisterInput(BaseModel):
@@ -23,6 +23,15 @@ class ProductInput(BaseModel):
     description: str = Field(default="", max_length=1000)
     price: float = Field(gt=0)
     stock: int = Field(ge=0)
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def normalize_name(cls, value: object) -> object:
+        if isinstance(value, str):
+            value = value.strip()
+            if not value:
+                raise ValueError("Product name must not be blank")
+        return value
 
 
 class ProductOutput(ProductInput):
