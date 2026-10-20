@@ -32,9 +32,9 @@ index 3992d8d..f44393d 100644
      return {"access_token": create_access_token(user.id), "token_type": "bearer"}
 diff --git a/app/validation.py b/app/validation.py
 new file mode 100644
-index 0000000..75e2da9
+index 0000000..c7e81cd
 --- /dev/null
 +++ b/app/validation.py
 @@ -0,0 +1,2 @@
 +def normalize_email(email: str) -> str:
-+    return email.strip().lower()
++    return email.lower()
