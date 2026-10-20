@@ -51,7 +51,12 @@ def main() -> int:
                 ).returncode != 0:
                     failures.append(f"{scenario}: branch is not based on baseline")
                 patch = (fixture / "changes.patch").read_text(encoding="utf-8")
-                current_diff = git("diff", "--binary", "baseline", branch, capture=True)
+                current_diff = subprocess.run(
+                    ["git", "-C", str(ROOT), "diff", "--binary", "baseline", branch],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
                 if patch.strip() != current_diff.strip():
                     failures.append(f"{scenario}: changes.patch does not match its branch diff")
         except (json.JSONDecodeError, subprocess.CalledProcessError) as exc:
