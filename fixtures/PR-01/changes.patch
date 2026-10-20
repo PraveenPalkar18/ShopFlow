@@ -1,5 +1,5 @@
 diff --git a/README.md b/README.md
-index 6315860..9388dd6 100644
+index 6315860..240d38e 100644
 --- a/README.md
 +++ b/README.md
 @@ -1,7 +1,7 @@
@@ -11,12 +11,3 @@ index 6315860..9388dd6 100644
  All payment behavior is simulated; do not send real payment or customer data.
  
  ## Windows PowerShell setup
-@@ -32,8 +32,6 @@ See [evaluation/README.md](evaluation/README.md). Useful commands:
- 
- ```powershell
- .\scripts\list-scenarios.ps1
--git branch --list "pr-*"
--git diff baseline pr-05-inventory-regression
- .\scripts\checkout-scenario.ps1 PR-05
- .\scripts\export-scenario.ps1 PR-05
- .\scripts\reset-baseline.ps1
