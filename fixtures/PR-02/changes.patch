@@ -1,13 +1,21 @@
 diff --git a/app/pricing.py b/app/pricing.py
-index 7f976e7..1e26a17 100644
+index 7f976e7..3e2f2db 100644
 --- a/app/pricing.py
 +++ b/app/pricing.py
-@@ -9,4 +9,4 @@ def money(value: float | Decimal) -> float:
+@@ -9,4 +9,12 @@ def money(value: float | Decimal) -> float:
  
  
  def calculate_total(items: list[CartItem]) -> float:
 -    return money(sum((Decimal(str(item.product.price)) * item.quantity for item in items), Decimal(0)))
-+    return money(sum((money(Decimal(str(item.product.price))) * item.quantity for item in items), Decimal(0)))
++    return money(
++        sum(
++            (
++                Decimal(str(money(Decimal(str(item.product.price))))) * item.quantity
++                for item in items
++            ),
++            Decimal(0),
++        )
++    )
 diff --git a/tests/test_orders.py b/tests/test_orders.py
 index de24aba..aa7d2b9 100644
 --- a/tests/test_orders.py
