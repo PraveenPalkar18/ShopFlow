@@ -1,0 +1,18 @@
+{
+  "scenario_id": "PR-05",
+  "branch": "pr-05-inventory-regression",
+  "title": "Optimize order inventory updates",
+  "labels": [
+    "bug",
+    "inventory-regression"
+  ],
+  "risk": "high",
+  "affected_modules": [
+    "inventory",
+    "orders"
+  ],
+  "regression_tests": [
+    "tests/test_orders.py::test_checkout_rejects_insufficient_stock"
+  ],
+  "expected_outcome": "Identify that the stock guard was removed and can allow negative inventory. Recommend checkout, insufficient-stock, and concurrent reservation coverage."
+}

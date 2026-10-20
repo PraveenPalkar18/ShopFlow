@@ -1,0 +1,18 @@
+{
+  "scenario_id": "PR-09",
+  "branch": "pr-09-cancel-restock",
+  "title": "Add order cancellation",
+  "labels": [
+    "incomplete-implementation",
+    "inventory-regression"
+  ],
+  "risk": "high",
+  "affected_modules": [
+    "orders",
+    "inventory"
+  ],
+  "regression_tests": [
+    "tests/test_orders.py::test_order_cancellation_restores_inventory"
+  ],
+  "expected_outcome": "The endpoint changes order status but omits restocking reserved units. Recommend verifying state transition and stock restoration atomically."
+}

@@ -1,0 +1,22 @@
+{
+  "scenario_id": "PR-07",
+  "branch": "pr-07-discount-codes",
+  "title": "Add validated discount codes at checkout",
+  "labels": [
+    "feature",
+    "multi-module-change"
+  ],
+  "risk": "medium",
+  "affected_modules": [
+    "validation",
+    "pricing",
+    "orders",
+    "discount persistence",
+    "payments"
+  ],
+  "regression_tests": [
+    "tests/test_orders.py::test_valid_discount_applies_to_checkout",
+    "tests/test_orders.py::test_unknown_discount_is_rejected"
+  ],
+  "expected_outcome": "Treat the coordinated validation, pricing, order, persistence, and checkout test changes as justified by the feature description; verify discount validation precedes mock charging."
+}

@@ -1,0 +1,12 @@
+diff --git a/app/routers/orders.py b/app/routers/orders.py
+index 5ba8ed1..23cb00c 100644
+--- a/app/routers/orders.py
++++ b/app/routers/orders.py
+@@ -113,7 +113,5 @@ def cancel_order(
+     if order.status != "paid":
+         raise HTTPException(status_code=409, detail="Order cannot be cancelled")
+     order.status = "cancelled"
+-    for item in order.items:
+-        restore_stock(db, item.product_id, item.quantity)
+     db.commit()
+     return {"id": order.id, "status": order.status}

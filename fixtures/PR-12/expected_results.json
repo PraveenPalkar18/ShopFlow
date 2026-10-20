@@ -1,0 +1,18 @@
+{
+  "scenario_id": "PR-12",
+  "branch": "pr-12-validation-refactor",
+  "title": "Extract shared email normalization",
+  "labels": [
+    "refactor",
+    "behavior-preserving"
+  ],
+  "risk": "low",
+  "affected_modules": [
+    "auth",
+    "validation"
+  ],
+  "regression_tests": [
+    "tests/test_auth.py::test_registration_login_and_authenticated_profile"
+  ],
+  "expected_outcome": "Treat the shared helper extraction as a behavior-preserving refactor. Existing registration and login tests are sufficient; avoid inflated risk or unnecessary new warnings."
+}

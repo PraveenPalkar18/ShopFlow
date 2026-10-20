@@ -1,0 +1,14 @@
+{
+  "scenario_id": "PR-01",
+  "branch": "pr-01-docs-typo",
+  "title": "Fix a typo in the README",
+  "labels": [
+    "documentation-only"
+  ],
+  "risk": "low",
+  "affected_modules": [
+    "documentation"
+  ],
+  "regression_tests": [],
+  "expected_outcome": "Accept as a documentation-only correction. No security finding or code regression warning is warranted."
+}

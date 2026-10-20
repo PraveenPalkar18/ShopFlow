@@ -1,0 +1,13 @@
+diff --git a/README.md b/README.md
+index e00cbaa..69fe838 100644
+--- a/README.md
++++ b/README.md
+@@ -1,7 +1,7 @@
+ # ShopFlow
+ 
+ ShopFlow is a small e-commerce order-management API used as a realistic
+-pull-request analysys test repository. It uses FastAPI, SQLAlchemy, and SQLite.
++pull-request analysis test repository. It uses FastAPI, SQLAlchemy, and SQLite.
+ All payment behavior is simulated; do not send real payment or customer data.
+ 
+ ## Windows PowerShell setup

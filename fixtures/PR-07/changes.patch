@@ -1,0 +1,131 @@
+diff --git a/app/models.py b/app/models.py
+index ed8a84f..0b2d913 100644
+--- a/app/models.py
++++ b/app/models.py
+@@ -39,6 +39,15 @@ class CartItem(Base):
+     product: Mapped["Product"] = relationship()
+ 
+ 
++class DiscountCode(Base):
++    __tablename__ = "discount_codes"
++
++    id: Mapped[int] = mapped_column(primary_key=True)
++    code: Mapped[str] = mapped_column(String(32), unique=True, index=True)
++    percent_off: Mapped[int] = mapped_column(Integer)
++    active: Mapped[bool] = mapped_column(Boolean, default=True)
++
++
+ class Order(Base):
+     __tablename__ = "orders"
+ 
+diff --git a/app/pricing.py b/app/pricing.py
+index 7f976e7..630572f 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -8,5 +8,6 @@ def money(value: float | Decimal) -> float:
+     return format_money(value)
+ 
+ 
+-def calculate_total(items: list[CartItem]) -> float:
+-    return money(sum((Decimal(str(item.product.price)) * item.quantity for item in items), Decimal(0)))
++def calculate_total(items: list[CartItem], discount_percent: int = 0) -> float:
++    subtotal = sum((Decimal(str(item.product.price)) * item.quantity for item in items), Decimal(0))
++    return money(subtotal * Decimal(100 - discount_percent) / Decimal(100))
+diff --git a/app/routers/orders.py b/app/routers/orders.py
+index 5ba8ed1..679513d 100644
+--- a/app/routers/orders.py
++++ b/app/routers/orders.py
+@@ -7,23 +7,33 @@ from app.database import get_db
+ from app.formatting import format_money
+ from app.inventory import reserve_stock, restore_stock
+ from app.invoices import build_invoice
+-from app.models import CartItem, Order, OrderItem, Product, User
++from app.models import CartItem, DiscountCode, Order, OrderItem, Product, User
+ from app.notifications import send_order_confirmation
+ from app.payments import charge_mock
+ from app.pricing import calculate_total
+-from app.schemas import OrderOutput
++from app.schemas import OrderCreate, OrderOutput
+ 
+ router = APIRouter(prefix="/orders", tags=["orders"])
+ 
+ 
+ @router.post("", response_model=OrderOutput, status_code=201)
+-def create_order(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
++def create_order(payload: OrderCreate | None = None, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+     cart_items = list(
+         db.scalars(select(CartItem).where(CartItem.user_id == user.id)).all()
+     )
+     if not cart_items:
+         raise HTTPException(status_code=400, detail="Cart is empty")
+-    total = calculate_total(cart_items)
++    discount_percent = 0
++    if payload and payload.discount_code:
++        discount = db.scalar(
++            select(DiscountCode).where(
++                DiscountCode.code == payload.discount_code, DiscountCode.active.is_(True)
++            )
++        )
++        if discount is None:
++            raise HTTPException(status_code=422, detail="Unknown discount code")
++        discount_percent = discount.percent_off
++    total = calculate_total(cart_items, discount_percent)
+     if not charge_mock(total)[0]:
+         raise HTTPException(status_code=402, detail="Mock payment declined")
+     reserved: list[tuple[int, int]] = []
+diff --git a/app/schemas.py b/app/schemas.py
+index 8422fa4..92ffbac 100644
+--- a/app/schemas.py
++++ b/app/schemas.py
+@@ -44,6 +44,10 @@ class CartLine(BaseModel):
+     line_total: float
+ 
+ 
++class OrderCreate(BaseModel):
++    discount_code: str | None = Field(default=None, pattern=r"^[A-Z0-9_-]{3,32}$")
++
++
+ class OrderOutput(BaseModel):
+     id: int
+     status: str
+diff --git a/tests/conftest.py b/tests/conftest.py
+index e8ac793..f6ae749 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -6,7 +6,7 @@ from sqlalchemy.pool import StaticPool
+ 
+ from app.database import Base, get_db
+ from app.main import app
+-from app.models import Product
++from app.models import DiscountCode, Product
+ 
+ 
+ @pytest.fixture()
+@@ -25,6 +25,7 @@ def client():
+                 Product(name="Desk Lamp", description="Warm LED desk lamp", price=42.00, stock=8),
+             ]
+         )
++        db.add(DiscountCode(code="SAVE10", percent_off=10))
+         db.commit()
+ 
+     def override_get_db():
+diff --git a/tests/test_orders.py b/tests/test_orders.py
+index de24aba..dba0b0f 100644
+--- a/tests/test_orders.py
++++ b/tests/test_orders.py
+@@ -42,3 +42,15 @@ def test_order_cancellation_restores_inventory(client):
+     assert cancelled.status_code == 200
+     refreshed = next(p for p in client.get("/products").json() if p["id"] == product["id"])
+     assert refreshed["stock"] == product["stock"]
++
++def test_valid_discount_applies_to_checkout(client):
++    headers, product = create_cart(client)
++    response = client.post("/orders", headers=headers, json={"discount_code": "SAVE10"})
++    assert response.status_code == 201
++    assert response.json()["total"] == round(product["price"] * 2 * 0.9, 2)
++
++
++def test_unknown_discount_is_rejected(client):
++    headers, _product = create_cart(client)
++    response = client.post("/orders", headers=headers, json={"discount_code": "NOTREAL"})
++    assert response.status_code == 422

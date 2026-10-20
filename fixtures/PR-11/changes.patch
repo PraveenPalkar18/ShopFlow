@@ -1,0 +1,21 @@
+diff --git a/app/formatting.py b/app/formatting.py
+index d6f8920..f99c50a 100644
+--- a/app/formatting.py
++++ b/app/formatting.py
+@@ -2,4 +2,4 @@ from decimal import Decimal, ROUND_HALF_UP
+ 
+ 
+ def format_money(value: float | Decimal) -> float:
+-    return float(Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
++    return float(Decimal(str(value)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+diff --git a/tests/test_formatting.py b/tests/test_formatting.py
+new file mode 100644
+index 0000000..d87a07a
+--- /dev/null
++++ b/tests/test_formatting.py
+@@ -0,0 +1,5 @@
++from app.formatting import format_money
++
++
++def test_currency_format_keeps_cents():
++    assert format_money(12.34) == 12.34

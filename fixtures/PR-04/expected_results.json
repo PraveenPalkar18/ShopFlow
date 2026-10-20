@@ -1,0 +1,19 @@
+{
+  "scenario_id": "PR-04",
+  "branch": "pr-04-dependency-update",
+  "title": "Improve inventory error messages",
+  "labels": [
+    "dependency-change",
+    "unexplained-change"
+  ],
+  "risk": "medium",
+  "affected_modules": [
+    "orders",
+    "dependencies",
+    "database"
+  ],
+  "regression_tests": [
+    "tests/test_orders.py::test_checkout_rejects_insufficient_stock"
+  ],
+  "expected_outcome": "Accept the clearer error message but flag the unrelated SQLAlchemy version-range change and its runtime/database impact."
+}

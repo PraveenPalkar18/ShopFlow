@@ -1,0 +1,24 @@
+diff --git a/.env.example b/.env.example
+index ff13ce1..65b874b 100644
+--- a/.env.example
++++ b/.env.example
+@@ -1,5 +1,5 @@
+ SHOPFLOW_DATABASE_URL=sqlite:///./shopflow.db
+ SHOPFLOW_SECRET_KEY=local-development-secret-change-me
+ SHOPFLOW_ADMIN_PASSWORD=admin-demo-password
+-SHOPFLOW_REQUIRE_ADMIN_AUTH=true
++SHOPFLOW_REQUIRE_ADMIN_AUTH=false
+ SHOPFLOW_LOG_LEVEL=INFO
+diff --git a/app/config.py b/app/config.py
+index 41a1239..0ff40c4 100644
+--- a/app/config.py
++++ b/app/config.py
+@@ -20,7 +20,7 @@ def get_settings() -> Settings:
+         database_url=os.getenv("SHOPFLOW_DATABASE_URL", "sqlite:///./shopflow.db"),
+         secret_key=os.getenv("SHOPFLOW_SECRET_KEY", "local-development-secret-change-me"),
+         admin_password=os.getenv("SHOPFLOW_ADMIN_PASSWORD", "admin-demo-password"),
+-        require_admin_auth=_as_bool(os.getenv("SHOPFLOW_REQUIRE_ADMIN_AUTH", "true")),
++        require_admin_auth=_as_bool(os.getenv("SHOPFLOW_REQUIRE_ADMIN_AUTH", "false")),
+         log_level=os.getenv("SHOPFLOW_LOG_LEVEL", "INFO").upper(),
+     )
+ 

@@ -1,0 +1,18 @@
+{
+  "scenario_id": "PR-02",
+  "branch": "pr-02-pricing-rounding",
+  "title": "Correct order total rounding",
+  "labels": [
+    "bug-fix",
+    "pricing"
+  ],
+  "risk": "low-medium",
+  "affected_modules": [
+    "pricing",
+    "orders"
+  ],
+  "regression_tests": [
+    "tests/test_orders.py::test_fractional_cent_lines_round_before_sum"
+  ],
+  "expected_outcome": "Recognize the expected change in pricing semantics. Recommend the fractional-cent regression and checkout total tests."
+}

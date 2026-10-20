@@ -1,0 +1,20 @@
+{
+  "scenario_id": "PR-11",
+  "branch": "pr-11-currency-propagation",
+  "title": "Simplify shared currency formatting",
+  "labels": [
+    "regression-risk",
+    "dependency-propagation"
+  ],
+  "risk": "medium",
+  "affected_modules": [
+    "formatting",
+    "pricing",
+    "orders",
+    "invoices"
+  ],
+  "regression_tests": [
+    "tests/test_formatting.py::test_currency_format_keeps_cents"
+  ],
+  "expected_outcome": "Trace the shared helper to checkout totals, summaries, and invoices. Identify the loss of cents without treating ordinary shared-code propagation as suspicious."
+}

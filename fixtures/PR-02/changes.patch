@@ -1,0 +1,26 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index 7f976e7..1e26a17 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -9,4 +9,4 @@ def money(value: float | Decimal) -> float:
+ 
+ 
+ def calculate_total(items: list[CartItem]) -> float:
+-    return money(sum((Decimal(str(item.product.price)) * item.quantity for item in items), Decimal(0)))
++    return money(sum((money(Decimal(str(item.product.price))) * item.quantity for item in items), Decimal(0)))
+diff --git a/tests/test_orders.py b/tests/test_orders.py
+index de24aba..aa7d2b9 100644
+--- a/tests/test_orders.py
++++ b/tests/test_orders.py
+@@ -42,3 +42,11 @@ def test_order_cancellation_restores_inventory(client):
+     assert cancelled.status_code == 200
+     refreshed = next(p for p in client.get("/products").json() if p["id"] == product["id"])
+     assert refreshed["stock"] == product["stock"]
++
++def test_fractional_cent_lines_round_before_sum():
++    from types import SimpleNamespace
++
++    from app.pricing import calculate_total
++
++    items = [SimpleNamespace(product=SimpleNamespace(price=0.335), quantity=3)]
++    assert calculate_total(items) == 1.02

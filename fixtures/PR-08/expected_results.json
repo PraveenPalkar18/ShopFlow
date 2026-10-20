@@ -1,0 +1,20 @@
+{
+  "scenario_id": "PR-08",
+  "branch": "pr-08-unsafe-config",
+  "title": "Improve application startup configuration",
+  "labels": [
+    "security",
+    "configuration-risk",
+    "unsafe-default"
+  ],
+  "risk": "high",
+  "affected_modules": [
+    "configuration",
+    "auth",
+    "products"
+  ],
+  "regression_tests": [
+    "tests/test_products.py::test_non_admin_cannot_create_product"
+  ],
+  "expected_outcome": "Identify that the default disables admin authorization and recommend an explicit secure default plus environment-specific opt-in."
+}

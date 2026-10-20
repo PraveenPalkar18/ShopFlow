@@ -1,0 +1,19 @@
+{
+  "scenario_id": "PR-06",
+  "branch": "pr-06-auth-regression",
+  "title": "Refactor bearer authentication lookup",
+  "labels": [
+    "security",
+    "authentication-regression",
+    "unauthorized-access"
+  ],
+  "risk": "critical",
+  "affected_modules": [
+    "auth",
+    "API authorization"
+  ],
+  "regression_tests": [
+    "tests/test_auth.py::test_invalid_bearer_token_is_rejected"
+  ],
+  "expected_outcome": "Reject the fallback that authenticates an invalid token as the first user. Treat as a critical authentication regression."
+}

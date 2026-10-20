@@ -1,0 +1,20 @@
+{
+  "scenario_id": "PR-10",
+  "branch": "pr-10-search-and-payment",
+  "title": "Fix product search query whitespace",
+  "labels": [
+    "mixed-scope",
+    "unrelated-change",
+    "payment-risk"
+  ],
+  "risk": "medium",
+  "affected_modules": [
+    "products",
+    "payments"
+  ],
+  "regression_tests": [
+    "tests/test_products.py::test_search_trims_query",
+    "tests/test_payments.py::test_mock_payment_rejects_zero_amount"
+  ],
+  "expected_outcome": "Preserve the useful search fix while separately identifying the unrelated change that permits zero-value mock charges."
+}

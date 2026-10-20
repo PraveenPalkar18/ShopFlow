@@ -1,0 +1,13 @@
+diff --git a/app/inventory.py b/app/inventory.py
+index cc3a7e5..0b2f196 100644
+--- a/app/inventory.py
++++ b/app/inventory.py
+@@ -7,7 +7,7 @@ from app.models import Product
+ def reserve_stock(db: Session, product_id: int, quantity: int) -> bool:
+     result = db.execute(
+         update(Product)
+-        .where(Product.id == product_id, Product.active.is_(True), Product.stock >= quantity)
++        .where(Product.id == product_id, Product.active.is_(True))
+         .values(stock=Product.stock - quantity)
+     )
+     return result.rowcount == 1

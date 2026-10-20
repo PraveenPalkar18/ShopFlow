@@ -1,0 +1,25 @@
+diff --git a/app/routers/orders.py b/app/routers/orders.py
+index 5ba8ed1..fc03236 100644
+--- a/app/routers/orders.py
++++ b/app/routers/orders.py
+@@ -32,7 +32,7 @@ def create_order(user: User = Depends(get_current_user), db: Session = Depends(g
+             for product_id, quantity in reserved:
+                 restore_stock(db, product_id, quantity)
+             db.rollback()
+-            raise HTTPException(status_code=409, detail="Insufficient inventory")
++            raise HTTPException(status_code=409, detail="Not enough units available for this order")
+         reserved.append((item.product_id, item.quantity))
+     order = Order(user_id=user.id, status="paid", total=total)
+     db.add(order)
+diff --git a/requirements.txt b/requirements.txt
+index ac8b1db..9666ca7 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,6 +1,6 @@
+ fastapi>=0.115,<1.0
+ uvicorn[standard]>=0.30,<1.0
+-sqlalchemy>=2.0,<3.0
++sqlalchemy>=2.1.5,<3.0
+ pytest>=8.0,<9.0
+ httpx>=0.27,<1.0
+ email-validator>=2.0,<3.0

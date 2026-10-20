@@ -1,0 +1,47 @@
+diff --git a/app/payments.py b/app/payments.py
+index e132840..e3f5e29 100644
+--- a/app/payments.py
++++ b/app/payments.py
+@@ -1,5 +1,5 @@
+ def charge_mock(amount: float) -> tuple[bool, str]:
+     """Simulate an approval; no external payment service is contacted."""
+-    if amount <= 0:
++    if amount < 0:
+         return False, "invalid_amount"
+     return True, "mock-approved"
+diff --git a/app/routers/products.py b/app/routers/products.py
+index d0dd34a..017ebd7 100644
+--- a/app/routers/products.py
++++ b/app/routers/products.py
+@@ -14,6 +14,7 @@ router = APIRouter(prefix="/products", tags=["products"])
+ @router.get("", response_model=list[ProductOutput])
+ def search_products(q: str = "", db: Session = Depends(get_db)):
+     statement = select(Product).where(Product.active.is_(True))
++    q = q.strip()
+     if q:
+         statement = statement.where(Product.name.ilike(f"%{q}%"))
+     return list(db.scalars(statement.order_by(Product.id)))
+diff --git a/tests/test_payments.py b/tests/test_payments.py
+new file mode 100644
+index 0000000..39f223e
+--- /dev/null
++++ b/tests/test_payments.py
+@@ -0,0 +1,5 @@
++from app.payments import charge_mock
++
++
++def test_mock_payment_rejects_zero_amount():
++    assert charge_mock(0) == (False, "invalid_amount")
+diff --git a/tests/test_products.py b/tests/test_products.py
+index e9f6e25..e0cb5ec 100644
+--- a/tests/test_products.py
++++ b/tests/test_products.py
+@@ -15,3 +15,8 @@ def test_product_search_is_case_insensitive(client):
+ 
+ def test_catalogue_seeded_by_startup(client):
+     assert len(client.get("/products").json()) == 2
++
++def test_search_trims_query(client):
++    response = client.get("/products?q=%20lamp%20")
++    assert response.status_code == 200
++    assert [product["name"] for product in response.json()] == ["Desk Lamp"]
