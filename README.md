@@ -32,6 +32,8 @@ See [evaluation/README.md](evaluation/README.md). Useful commands:
 
 ```powershell
 .\scripts\list-scenarios.ps1
+git branch --list "pr-*"
+git diff baseline pr-05-inventory-regression
 .\scripts\checkout-scenario.ps1 PR-05
 .\scripts\export-scenario.ps1 PR-05
 .\scripts\reset-baseline.ps1
