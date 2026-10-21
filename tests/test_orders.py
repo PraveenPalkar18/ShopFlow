@@ -35,10 +35,14 @@ def test_checkout_rejects_insufficient_stock(client):
     assert refreshed["stock"] == product["stock"]
 
 
-def test_order_cancellation_restores_inventory(client):
+def test_order_cancellation_restores_inventory_and_sends_notification(client, caplog):
     headers, product = create_cart(client)
     order = client.post("/orders", headers=headers).json()
     cancelled = client.post(f"/orders/{order['id']}/cancel", headers=headers)
     assert cancelled.status_code == 200
+    assert (
+        f"notification_simulated event=order_cancellation order_id={order['id']} "
+        "recipient=buyer@example.com"
+    ) in caplog.text
     refreshed = next(p for p in client.get("/products").json() if p["id"] == product["id"])
     assert refreshed["stock"] == product["stock"]

@@ -8,7 +8,7 @@ from app.formatting import format_money
 from app.inventory import reserve_stock, restore_stock
 from app.invoices import build_invoice
 from app.models import CartItem, Order, OrderItem, Product, User
-from app.notifications import send_order_confirmation
+from app.notifications import send_order_cancellation, send_order_confirmation
 from app.payments import charge_mock
 from app.pricing import calculate_total
 from app.schemas import OrderOutput
@@ -116,4 +116,5 @@ def cancel_order(
     for item in order.items:
         restore_stock(db, item.product_id, item.quantity)
     db.commit()
+    send_order_cancellation(user.email, order.id)
     return {"id": order.id, "status": order.status}
