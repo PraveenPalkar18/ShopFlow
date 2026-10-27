@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
 from app.database import get_db
+from app.formatting import format_money
 from app.models import CartItem, Product, User
 from app.schemas import CartInput
 
@@ -20,8 +21,8 @@ def get_cart(user: User = Depends(get_current_user), db: Session = Depends(get_d
             "product_id": item.product_id,
             "product_name": item.product.name,
             "quantity": item.quantity,
-            "unit_price": item.product.price,
-            "line_total": item.product.price * item.quantity,
+            "unit_price": format_money(item.product.price),
+            "line_total": format_money(item.product.price * item.quantity),
         }
         for item in items
     ]

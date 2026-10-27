@@ -53,8 +53,8 @@ def create_order(user: User = Depends(get_current_user), db: Session = Depends(g
                 "product_id": product.id,
                 "product_name": product.name,
                 "quantity": item.quantity,
-                "unit_price": product.price,
-                "line_total": product.price * item.quantity,
+                "unit_price": format_money(product.price),
+                "line_total": format_money(product.price * item.quantity),
             }
         )
         db.delete(item)
@@ -79,7 +79,7 @@ def list_orders(user: User = Depends(get_current_user), db: Session = Depends(ge
                     "product_id": item.product_id,
                     "product_name": item.product_name,
                     "quantity": item.quantity,
-                    "unit_price": item.unit_price,
+                    "unit_price": format_money(item.unit_price),
                     "line_total": format_money(item.unit_price * item.quantity),
                 }
                 for item in order.items
