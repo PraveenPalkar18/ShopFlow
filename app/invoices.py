@@ -12,4 +12,10 @@ def build_invoice(order: Order) -> dict:
         }
         for item in order.items
     ]
-    return {"order_id": order.id, "lines": lines, "total": format_money(order.total)}
+    return {
+        "order_id": order.id,
+        "customer_email": order.user.email,
+        "status": order.status,
+        "lines": lines,
+        "total": format_money(order.total),
+    }
