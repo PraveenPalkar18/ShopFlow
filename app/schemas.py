@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
+from app.product_names import normalize_product_name
+
 
 class RegisterInput(BaseModel):
     email: EmailStr
@@ -28,7 +30,7 @@ class ProductInput(BaseModel):
     @classmethod
     def normalize_name(cls, value: object) -> object:
         if isinstance(value, str):
-            value = value.strip()
+            value = normalize_product_name(value)
             if not value:
                 raise ValueError("Product name must not be blank")
         return value

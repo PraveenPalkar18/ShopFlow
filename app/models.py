@@ -1,7 +1,8 @@
 from sqlalchemy import Boolean, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app.database import Base
+from app.product_names import normalize_product_name
 
 
 class User(Base):
@@ -26,6 +27,10 @@ class Product(Base):
     price: Mapped[float] = mapped_column(Float)
     stock: Mapped[int] = mapped_column(Integer, default=0)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    @validates("name")
+    def normalize_name(self, key: str, value: str) -> str:
+        return normalize_product_name(value)
 
 
 class CartItem(Base):
