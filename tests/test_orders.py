@@ -35,6 +35,29 @@ def test_checkout_rejects_insufficient_stock(client):
     assert refreshed["stock"] == product["stock"]
 
 
+def test_invoice_includes_customer_and_order_details(client):
+    headers, product = create_cart(client)
+    order = client.post("/orders", headers=headers).json()
+
+    response = client.get(f"/orders/{order['id']}/invoice", headers=headers)
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "order_id": order["id"],
+        "customer_email": "buyer@example.com",
+        "status": "paid",
+        "lines": [
+            {
+                "description": product["name"],
+                "quantity": 2,
+                "unit_price": product["price"],
+                "line_total": product["price"] * 2,
+            }
+        ],
+        "total": order["total"],
+    }
+
+
 def test_order_cancellation_restores_inventory_and_sends_notification(client, caplog):
     headers, product = create_cart(client)
     order = client.post("/orders", headers=headers).json()
