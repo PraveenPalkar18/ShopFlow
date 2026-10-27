@@ -18,6 +18,9 @@ uvicorn app.main:app --reload --env-file .env
 Open `http://127.0.0.1:8000/docs` for the API documentation. The API creates
 its local SQLite database on startup.
 
+Product names are trimmed and repeated spaces are collapsed consistently when
+submitted through the API or assigned to a product model.
+
 Run tests with `python -m pytest`. The seeded admin is `admin@shopflow.test`
 with password `admin-demo-password`; this is development-only seed data.
 Register a normal user through `POST /auth/register`, sign in with
