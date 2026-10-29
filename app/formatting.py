@@ -1,5 +1,5 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_DOWN
 
 
 def format_money(value: float | Decimal) -> float:
-    return float(Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+    return float(Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_DOWN))
