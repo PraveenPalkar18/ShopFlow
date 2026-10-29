@@ -16,7 +16,7 @@ def search_products(q: str = "", db: Session = Depends(get_db)):
     statement = select(Product).where(Product.active.is_(True))
     if q:
         statement = statement.where(Product.name.ilike(f"%{q}%"))
-    return list(db.scalars(statement.order_by(Product.id)))
+    return list(db.scalars(statement.order_by(Product.name)))
 
 
 @router.post("", response_model=ProductOutput, status_code=201)

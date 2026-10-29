@@ -10,7 +10,7 @@ from app.models import Product
 
 
 @pytest.fixture()
-def client():
+def test_session_factory():
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -26,13 +26,18 @@ def client():
             ]
         )
         db.commit()
+    yield TestingSession
+    Base.metadata.drop_all(engine)
+    engine.dispose()
 
+
+@pytest.fixture()
+def client(test_session_factory):
     def override_get_db():
-        with TestingSession() as db:
+        with test_session_factory() as db:
             yield db
 
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
-    Base.metadata.drop_all(engine)

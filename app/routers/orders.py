@@ -23,6 +23,11 @@ def create_order(user: User = Depends(get_current_user), db: Session = Depends(g
     )
     if not cart_items:
         raise HTTPException(status_code=400, detail="Cart is empty")
+    if any(item.quantity <= 0 for item in cart_items):
+        raise HTTPException(
+            status_code=400,
+            detail="Cart item quantity must be greater than zero",
+        )
     total = calculate_total(cart_items)
     if not charge_mock(total)[0]:
         raise HTTPException(status_code=402, detail="Mock payment declined")

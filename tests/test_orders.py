@@ -1,3 +1,7 @@
+import pytest
+from sqlalchemy import select
+
+from app.models import CartItem
 from tests.helpers import register_and_login
 
 
@@ -31,6 +35,25 @@ def test_checkout_rejects_insufficient_stock(client):
     )
     response = client.post("/orders", headers=headers)
     assert response.status_code == 409
+    refreshed = next(p for p in client.get("/products").json() if p["id"] == product["id"])
+    assert refreshed["stock"] == product["stock"]
+
+
+@pytest.mark.parametrize("quantity", [0, -2])
+def test_checkout_rejects_nonpositive_persisted_cart_quantity(
+    client, test_session_factory, quantity
+):
+    headers, product = create_cart(client)
+    with test_session_factory() as db:
+        item = db.scalars(select(CartItem)).one()
+        item.quantity = quantity
+        db.commit()
+
+    response = client.post("/orders", headers=headers)
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Cart item quantity must be greater than zero"
+    assert client.get("/cart", headers=headers).json()[0]["quantity"] == quantity
     refreshed = next(p for p in client.get("/products").json() if p["id"] == product["id"])
     assert refreshed["stock"] == product["stock"]
 
